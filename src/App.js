@@ -1,26 +1,44 @@
 import React from 'react';
-import logo from './logo.svg';
+import { connect } from 'react-redux';
 import './App.css';
+import Header from './component/Header';
+import Navigation from './component/Navigation';
+import Main from './component/Main';
+import Footer from './component/Footer';
+import { loadWeather as loadWeatherAction } from './redux/actions/weatherActions';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+       searchValue:'',
+    };
+  }
+ componentDidMount() {
+   this.props.loadWeather('Brisbane');
 }
 
-export default App;
+  render() {
+    console.log(this.props);
+    return (
+      <div className="weather-channel__container">
+        <Header />
+        {this.props.errorMessage && <p className = "alert">{this.props.errorMessage}</p>}
+        <Navigation />  
+        <Main />
+        <Footer />
+      </div>
+    )
+  } 
+}
+
+const mapStateToProps = state => ({
+  errorMessage:state.weather.errorMessage,
+});
+
+const mapDispatchToProps = dispatch => ({
+  loadWeather:city => dispatch(loadWeatherAction(city,5)),
+});
+
+export default connect(mapStateToProps,mapDispatchToProps)(App);
